@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Neon Runner</title>
+<style>
+  body {
+    margin: 0;
+    background: #000;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    color: white;
+  }
+  #score {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 22px;
+  }
+</style>
+</head>
+<body>
+
+<div id="score">Distance: 0</div>
+<canvas id="game"></canvas>
+
+<script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let distance = 0;
+let speed = 8;
+let playing = true;
+
+const lanes = [
+  canvas.width * 0.25,
+  canvas.width * 0.5,
+  canvas.width * 0.75
+];
+
+const player = {
+  lane: 1,
+  x: lanes[1],
+  y: canvas.height - 120,
+  size: 50,
+  vy: 0,
+  jumping: false
+};
+
+const keys = {};
+document.addEventListener("keydown", e => keys[e.key] = true);
+document.addEventListener("keyup", e => keys[e.key] = false);
+
+let obstacles = [];
+
+function spawnObstacle() {
+  obstacles.push({
+    lane: Math.floor(Math.random() * 3),
+    y: -100,
+    size: 60
+  });
+}
+
+function updatePlayer() {
+  // lane switching
+  if (keys["a"] || keys["ArrowLeft"]) player.lane = Math.max(0, player.lane - 1);
+  if (keys["d"] || keys["ArrowRight"]) player.lane = Math.min(2, player.lane + 1);
+
+  player.x = lanes[player.lane];
+
+  // jumping
+  if ((keys["w"] || keys["ArrowUp"] || keys[" "]) && !player.jumping) {
+    player.vy = -18;
+    player.jumping = true;
+  }
+
+  player.vy += 1; // gravity
+  player.y += player.vy;
+
+  if (player.y >= canvas.height - 120) {
+    player.y = canvas.height - 120;
+    player.vy = 0;
+    player.jumping = false;
+  }
+}
+
+function updateObstacles() {
+  for (const o of obstacles) {
+    o.y += speed;
+  }
+  obstacles = obstacles.filter(o => o.y < canvas.height + 200);
+}
+
+function checkCollision() {
+  for (const o of obstacles) {
+    if (o.lane === player.lane) {
+      if (o.y + o.size > player.y && o.y < player.y + player.size) {
+        gameOver();
+      }
+    }
+  }
+}
+
+function gameOver() {
+  playing = false;
+  alert("You ran " + distance + " meters!");
+  location.reload();
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // neon lanes
+  ctx.strokeStyle = "#222";
+  ctx.lineWidth = 4;
+  for (const x of lanes) {
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, canvas.height);
+    ctx.stroke();
+  }
+
+  // player
+  ctx.fillStyle = "#00eaff";
+  ctx.fillRect(player.x - player.size/2, player.y, player.size, player.size);
+
+  // obstacles
+  ctx.fillStyle = "#ff0033";
+  for (const o of obstacles) {
+    const x = lanes[o.lane];
+    ctx.fillRect(x - o.size/2, o.y, o.size, o.size);
+  }
+}
+
+let lastSpawn = 0;
+let lastTime = performance.now();
+
+function loop(t) {
+  if (!playing) return;
+
+  const dt = (t - lastTime) / 1000;
+  lastTime = t;
+
+  distance += Math.floor(speed * 0.5);
+  document.getElementById("score").textContent = "Distance: " + distance;
+
+  updatePlayer();
+  updateObstacles();
+  checkCollision();
+
+  if (t - lastSpawn > 700) {
+    spawnObstacle();
+    lastSpawn = t;
+  }
+
+  speed += 0.01; // gets harder
+
+  draw();
+  requestAnimationFrame(loop);
+}
+
+loop(lastTime);
+</script>
+
+</body>
+</html>
