@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Neon Runner</title>
+<style>
+  body {
+    margin: 0;
+    background: #000;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    color: white;
+  }
+  #score {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 22px;
+  }
+</style>
+</head>
+<body>
+
+<div id="score">Distance: 0</div>
+<canvas id="game"></canvas>
+
+<script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let distance = 0;
+let speed = 8;
+let playing = true;
+
+const lanes = [
+  canvas.width * 0.25,
+  canvas.width * 0.5,
+  canvas.width * 0.75
+];
+
+const player = {
+  lane: 1,
+  x: lanes[1],
+  y: canvas.height - 120,
+  size: 50,
+  vy: 0,
+  jumping: false
+};
+
+const keys = {};
+document.addEventListener("keydown", e => keys[e.key] = true);
+document.addEventListener("keyup", e => keys[e.key] = false);
+
+let obstacles = [];
+
+function spawnObstacle() {
+  obstacles.push({
+    lane: Math.floor(Math.random() * 3),
+    y: -100,
+    size: 60
+  });
+}
+
+function updatePlayer() {
+  // lane switching
+  if (keys["a"] || keys["ArrowLeft"]) player.lane = Math.max(0, player.lane - 1);
+  if (keys["d"] || keys["ArrowRight"]) player.lane = Math.min(2, player.lane + 1);
+
+  player.x = lanes[player.lane];
+
+  // jumping
+  if ((keys["w"]
