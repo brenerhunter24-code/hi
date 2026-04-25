@@ -1,0 +1,37 @@
+import time
+import random
+import os
+
+def clear():
+    os.system("cls" if os.name == "nt" else "clear")
+
+def main():
+    clear()
+    print("=== QUICK DRAW ===")
+    print("When you see 'DRAW!', press ENTER as fast as you can.")
+    print("But if you press early, you lose.")
+    input("\nPress ENTER to begin...")
+
+    clear()
+    print("Get ready...")
+    time.sleep(random.uniform(1.5, 4.0))
+
+    # Random chance of fake-out
+    if random.random() < 0.25:
+        print("WAIT...")
+        time.sleep(random.uniform(1.0, 3.0))
+
+    clear()
+    print("DRAW!")
+
+    start = time.time()
+    input()  # wait for ENTER
+    end = time.time()
+
+    reaction = end - start
+
+    clear()
+    if reaction < 0.10:
+        print("⚡ LIGHTNING FAST! Reaction:", round(reaction, 3), "seconds")
+    elif reaction < 0.25:
+        print("🔥 Great shot! Reaction:", round(reaction,
