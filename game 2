@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Catch the Square</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      background: #111;
+      color: #fff;
+      font-family: system-ui, sans-serif;
+      user-select: none;
+    }
+
+    h1 {
+      margin-top: 20px;
+    }
+
+    #info {
+      margin: 10px 0 20px;
+      display: flex;
+      gap: 20px;
+      font-size: 18px;
+    }
+
+    #gameArea {
+      position: relative;
+      width: 600px;
+      height: 400px;
+      border: 2px solid #444;
+      background: #181818;
+      overflow: hidden;
+    }
+
+    #target {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      background: #ff4757;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+
+    #target:active {
+      background: #ffa502;
+    }
+
+    #message {
+      margin-top: 15px;
+      font-size: 18px;
+      min-height: 24px;
+    }
+
+    #startBtn {
+      margin-top: 10px;
+      padding: 8px 16px;
+      font-size: 16px;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+      background: #2ed573;
+      color: #000;
+      font-weight: 600;
+    }
+
+    #startBtn:active {
+      transform: scale(0.97);
+    }
+  </style>
+</head>
+<body>
+  <h1>Catch
