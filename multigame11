@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Random Disaster Survival</title>
+<style>
+  body {
+    margin: 0;
+    background: #111;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    color: white;
+  }
+  #ui {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 22px;
+  }
+</style>
+</head>
+<body>
+
+<div id="ui">
+  Time Survived: <span id="time">0.0</span>s<br>
+  Disaster: <span id="disaster">None</span>
+</div>
+
+<canvas id="game"></canvas>
+
+<script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let time = 0;
+let playing = true;
+let currentDisaster = "None";
+let disasterTimer = 0;
+
+const player = {
+  x: canvas.width / 2,
+  y: canvas.height / 2,
+  size: 30,
+  speed: 6
+};
+
+const keys = {};
+document.addEventListener("keydown", e => keys[e.key] = true);
+document.addEventListener("keyup", e => keys[e.key] = false);
+
+let hazards = [];
+
+function randomDisaster() {
+  const list = [
+    "Tornado",
+    "Meteor Shower",
+    "Earthquake",
+    "Fire Wave",
+    "Poison Gas",
+    "Lightning Storm"
+  ];
+  return list[Math.floor(Math.random() * list.length)];
+}
+
+function triggerDisaster() {
+  currentDisaster = randomDisaster();
+  document.getElementById("disaster").textContent = currentDisaster;
+  hazards = [];
+
+  if (currentDisaster === "Tornado") spawnTornado();
+  if (currentDisaster === "Meteor Shower") spawnMeteors();
+  if (currentDisaster === "Earthquake") shakeScreen();
+  if (currentDisaster === "Fire Wave") spawnFireWave();
+  if (currentDisaster === "Poison Gas") spawnGas();
+  if (currentDisaster === "Lightning Storm") spawnLightning();
+}
+
+function spawnTornado() {
+  hazards.push({
+    type: "tornado",
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    r: 80,
+    vx: (Math.random() - 0.5) * 4,
+    vy: (Math.random() - 0.5) * 4
+  });
+}
+
+function spawnMeteors() {
+  for (let i = 0; i < 10; i++) {
+    hazards.push({
+      type: "meteor",
+      x: Math.random() * canvas.width,
+      y: -100,
+      r: 20 + Math.random() * 20,
+      vy: 6 + Math.random() * 4
+    });
+  }
+}
+
+function shakeScreen() {
+  // Earthquake is visual only but deadly if player touches edges
+}
+
+function spawnFireWave() {
+  hazards.push({
+    type: "fire",
+    x: 0,
+    y: canvas.height - 40,
+    w: canvas.width,
+    h: 40,
+    vy: -3
+  });
+}
+
+function spawnGas() {
+  hazards.push({
+    type: "gas",
+    x: 0,
+    y: 0,
+    w: canvas.width,
+    h: canvas.height,
+    alpha: 0
+  });
+}
+
+function spawnLightning() {
+  hazards.push({
+    type: "lightning",
+    x: Math.random() * canvas.width,
+    y: 0,
+    w: 10,
+    h: canvas.height,
+    timer: 30
+  });
+}
+
+function updatePlayer() {
+  if (keys["w"] || keys["ArrowUp"]) player.y -= player.speed;
+  if (keys["s"] || keys["ArrowDown"]) player.y += player.speed;
+  if (keys["a"] || keys["ArrowLeft"]) player.x -= player.speed;
+  if (keys["d"] || keys["ArrowRight"]) player.x += player.speed;
+
+  player.x = Math.max(0, Math.min(canvas.width - player.size, player.x));
+  player.y = Math.max(0, Math.min(canvas.height - player.size, player.y));
+}
+
+function updateHazards() {
+  for (const h of hazards) {
+    if (h.type === "tornado") {
+      h.x += h.vx;
+      h.y += h.vy;
+    }
+    if (h.type === "meteor") {
+      h.y += h.vy;
+    }
+    if (h.type === "fire") {
+      h.y += h.vy;
+    }
+    if (h.type === "gas") {
+      h.alpha = Math.min(0.5, h.alpha + 0.01);
+    }
+    if (h.type === "lightning") {
+      h.timer--;
+      if (h.timer <= 0) {
+        h.x = Math.random() * canvas.width;
+        h.timer = 30;
+      }
+    }
+  }
+}
+
+function checkCollision() {
+  const p = { x: player.x, y: player.y, w: player.size, h: player.size };
+
+  for (const h of hazards) {
+    if (h.type === "tornado") {
+      const dist = Math.hypot(player.x - h.x, player.y - h.y);
+      if (dist < h.r) gameOver();
+    }
+    if (h.type === "meteor") {
+      const dist = Math.hypot(player.x - h.x, player.y - h.y);
+      if (dist < h.r + player.size / 2) gameOver();
+    }
+    if (h.type === "fire") {
