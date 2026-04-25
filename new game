@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Block Tower Panic</title>
+<style>
+  body {
+    margin: 0;
+    background: #111;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    color: white;
+  }
+  #score {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 22px;
+  }
+</style>
+</head>
+<body>
+
+<div id="score">Blocks Placed: 0</div>
+<canvas id="game"></canvas>
+
+<script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let blocks = [];
+let fallingBlock = null;
+let score = 0;
+let playing = true;
+
+function spawnBlock() {
+  const w = 120;
+  const h = 30;
+  fallingBlock = {
+    x: canvas.width / 2 - w / 2,
+    y: -50,
+    w,
+    h,
+    vx: (Math.random() - 0.5) * 6,
+    vy: 4 + Math.random() * 3,
+    angle: 0,
+    spin: (Math.random() - 0.5) * 0.1
+  };
+}
+
+function updateFalling() {
+  if (!fallingBlock) return;
+
+  fallingBlock.x += fallingBlock.vx;
+  fallingBlock.y += fallingBlock.vy;
+  fallingBlock.angle += fallingBlock.spin;
+
+  // bounce off walls
+  if (fallingBlock.x < 0 || fallingBlock.x + fallingBlock.w > canvas.width) {
+    fallingBlock
