@@ -1,0 +1,15 @@
+100-tiny-games/
+  game-001-clicker/
+    index.html
+    style.css
+    script.js
+  game-002-dodger/
+    index.html
+    style.css
+    script.js
+  ...
+  game-100-xyz/
+    index.html
+    style.css
+    script.js
+  README.md
