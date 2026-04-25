@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Void Serpent Boss Fight</title>
+<style>
+  body {
+    margin: 0;
+    background: #000;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    color: white;
+  }
+  #ui {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 20px;
+  }
+</style>
+</head>
+<body>
+
+<div id="ui">
+  Time Survived: <span id="time">0.0</span>s<br>
+  Boss HP: <span id="hp">100</span>%
+</div>
+
+<canvas id="game"></canvas>
+
+<script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let time = 0;
+let playing = true;
+
+const player = {
+  x: canvas.width / 2,
+  y: canvas.height / 2 + 200,
+  size: 25,
+  speed: 6
+};
+
+const keys = {};
+document.addEventListener("keydown", e => keys[e.key] = true);
+document.addEventListener("keyup", e => keys[e.key] = false);
+
+const boss = {
+  x: canvas.width / 2,
+  y: canvas.height / 2 - 150,
+  r: 80,
+  hp: 100,
+  attackTimer: 0,
+  mode: "idle"
+};
+
+let projectiles = [];
+let hazards = [];
+
+function updatePlayer() {
+  if (keys["w"] || keys["ArrowUp"]) player.y -= player.speed;
+  if (keys["s"] || keys["ArrowDown"]) player.y += player.speed;
+  if (keys["a"]
