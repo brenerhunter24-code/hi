@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Meteor Escape</title>
+<style>
+  body {
+    margin: 0;
+    background: #000;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    color: white;
+  }
+  #score {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 22px;
+  }
+</style>
+</head>
+<body>
+
+<div id="score">Score: 0</div>
+<canvas id="game"></canvas>
+
+<script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let score = 0;
+let playing = true;
+
+const player = {
+  x: canvas.width / 2,
+  y: canvas.height / 2,
+  r: 20,
+  speed: 6
+};
+
+const keys = {};
+document.addEventListener("keydown", e => keys[e.key] = true);
+document.addEventListener("keyup", e => keys[e.key] = false);
+
+let meteors = [];
+
+function spawnMeteor() {
+  const size = 20 + Math.random() * 40;
+
+  // spawn from any edge
+  const side = Math.floor(Math.random() * 4);
+  let x, y, vx, vy;
+
+  if (side === 0) { // top
+    x = Math.random() * canvas.width;
+    y = -size;
+    vx = (Math.random() - 0.5) * 3;
+    vy = 2 + Math.random() * 4;
+  } else if (side === 1) { // bottom
+    x = Math.random() * canvas.width;
+    y = canvas.height + size;
+    vx = (Math.random() - 0.5) * 3;
+    vy = -2 - Math.random() * 4;
+  } else if (side === 2) { // left
+    x = -size;
+    y = Math.random() * canvas.height;
+    vx = 2 + Math.random() * 4;
+    vy = (Math.random() - 0.5) * 3;
+  } else { // right
+    x = canvas.width + size;
+    y = Math.random() * canvas.height;
+    vx = -2 - Math.random() * 4;
+    vy = (Math.random() - 0.5) * 3;
+  }
+
+  meteors.push({ x, y, r: size, vx, vy });
+}
+
+function updatePlayer() {
+  if (keys["w"] || keys["ArrowUp"]) player.y -= player.speed;
+  if (keys["s"] || keys["ArrowDown"]) player.y += player.speed;
+  if (keys["a"] || keys["ArrowLeft"]) player.x -= player.speed;
+  if (keys["d"] || keys["ArrowRight"]) player.x += player.speed;
+
+  // keep inside screen
+  player.x = Math.max(player.r, Math.min(canvas.width - player.r, player.x));
+  player.y = Math.max(player.r, Math.min(canvas.height - player.r, player.y));
+}
+
+function updateMeteors() {
+  for (const m of meteors) {
+    m.x += m.vx;
+    m.y += m.vy;
+  }
+
+  meteors = meteors.filter(m =>
+    m.x > -200 && m.x < canvas.width + 200 &&
+    m.y > -200 && m.y < canvas.height + 200
+  );
+}
+
+function checkCollision() {
+  for (const m of meteors) {
+    const dx = player.x - m.x;
+    const dy = player.y - m.y;
+    const dist = Math.hypot(dx, dy);
+
+    if (dist < player.r + m.r) {
+      playing = false;
+      alert("You survived " + score + " points!");
+      location.reload();
+    }
+  }
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // player
+  ctx.beginPath();
+  ctx.arc(player.x, player.y, player.r, 0, Math.PI * 2);
+  ctx.fillStyle = "#00eaff";
+  ctx.fill();
+
+  // meteors
+  for (const m of meteors) {
+    ctx.beginPath();
+    ctx.arc(m.x, m.y, m.r, 0, Math.PI * 2);
+    ctx.fillStyle = "#ff5733";
+    ctx.fill();
+  }
+}
+
+function loop() {
+  if (!playing) return;
+
+  if (Math.random() < 0.04) spawnMeteor();
+
+  updatePlayer();
