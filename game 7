@@ -1,0 +1,51 @@
+import random
+import os
+import time
+
+WIDTH = 10
+HEIGHT = 10
+
+player = {"hp": 10, "atk": 2, "x": 0, "y": 0}
+monsters = []
+treasures = []
+game_over = False
+
+def clear():
+    os.system("cls" if os.name == "nt" else "clear")
+
+def spawn_monsters(n=5):
+    for _ in range(n):
+        monsters.append({
+            "x": random.randint(0, WIDTH-1),
+            "y": random.randint(0, HEIGHT-1),
+            "hp": random.randint(2, 5),
+            "atk": random.randint(1, 3)
+        })
+
+def spawn_treasures(n=3):
+    for _ in range(n):
+        treasures.append({
+            "x": random.randint(0, WIDTH-1),
+            "y": random.randint(0, HEIGHT-1),
+            "value": random.randint(1, 4)
+        })
+
+def draw():
+    clear()
+    print(f"HP: {player['hp']}  ATK: {player['atk']}")
+    print("Move with WASD")
+
+    for y in range(HEIGHT):
+        row = ""
+        for x in range(WIDTH):
+            if player["x"] == x and player["y"] == y:
+                row += "@"
+            elif any(m["x"] == x and m["y"] == y for m in monsters):
+                row += "M"
+            elif any(t["x"] == x and t["y"] == y for t in treasures):
+                row += "$"
+            else:
+                row += "."
+        print(row)
+
+def
