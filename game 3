@@ -1,0 +1,48 @@
+import random
+import time
+import os
+import sys
+import threading
+
+WIDTH = 20
+HEIGHT = 10
+player_x = WIDTH // 2
+rocks = []
+game_over = False
+score = 0
+
+def clear():
+    os.system("cls" if os.name == "nt" else "clear")
+
+def draw():
+    clear()
+    grid = [[" " for _ in range(WIDTH)] for _ in range(HEIGHT)]
+
+    # draw rocks
+    for rx, ry in rocks:
+        if 0 <= ry < HEIGHT:
+            grid[ry][rx] = "O"
+
+    # draw player
+    grid[HEIGHT - 1][player_x] = "A"
+
+    # print grid
+    for row in grid:
+        print("".join(row))
+    print(f"Score: {score}")
+
+def update_rocks():
+    global game_over, score
+    for i in range(len(rocks)):
+        rocks[i] = (rocks[i][0], rocks[i][1] + 1)
+
+    # check collision
+    for rx, ry in rocks:
+        if ry == HEIGHT - 1 and rx == player_x:
+            game_over = True
+
+    # remove off-screen rocks
+    rocks[:] = [(x, y) for x, y in rocks if y < HEIGHT]
+
+    score += 1
+
