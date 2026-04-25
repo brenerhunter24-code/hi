@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Starfire - Space Shooter</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: #0a0a14;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+    #wrap {
+      position: relative;
+      width: 100%;
+      max-width: 680px;
+      height: 420px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 0.5px solid rgba(255,255,255,0.1);
+      box-shadow: 0 0 40px rgba(68,136,255,0.1);
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+<div id="wrap">
+  <canvas id="c"></canvas>
+</div>
+
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const wrap = document.getElementById('wrap');
+
+function setSize() {
+  canvas.width = wrap.offsetWidth || 680;
+  canvas.height = wrap.offsetHeight || 420;
+}
+setSize();
+window.addEventListener('resize', () => { setSize(); initStars(); });
+
+let stars = [];
+function initStars() {
+  stars = [];
+  for (let i = 0; i < 110; i++) {
+    stars.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 1.4 + 0.3,
+      speed: Math.random() * 0.4 + 0.1,
+      opacity: Math.random() * 0.6 + 0.2
+    });
+  }
+}
+initStars();
+
+let gState = 'start', score = 0, lives = 3, frame = 0;
+let bullets = [], asteroids = [], particles = [], effects = [];
+let shootCD = 0, highScore = 0;
+const player = { x: 80, y: 210, invincible: 0 };
+const keys = {};
+let touchY = null, touchFire = false;
+
+document.addEventListener('keydown', e => {
+  keys[e.code] = true;
+  if (['Ar
+
