@@ -1,0 +1,36 @@
+import random
+import os
+import time
+import threading
+import sys
+
+WIDTH = 20
+HEIGHT = 15
+
+snake = [(WIDTH//2, HEIGHT//2)]
+direction = "RIGHT"
+food = None
+game_over = False
+score = 0
+
+def clear():
+    os.system("cls" if os.name == "nt" else "clear")
+
+def spawn_food():
+    while True:
+        f = (random.randint(0, WIDTH-1), random.randint(0, HEIGHT-1))
+        if f not in snake:
+            return f
+
+def draw():
+    clear()
+    print("Score:", score)
+    for y in range(HEIGHT):
+        row = ""
+        for x in range(WIDTH):
+            if (x, y) == snake[0]:
+                row += "@"  # head
+            elif (x, y) in snake:
+                row += "o"  # body
+            elif (x, y) == food:
+                row
