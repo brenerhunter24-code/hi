@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Bounce Arena</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: #111;
+      cursor: crosshair;
+      font-family: Arial, sans-serif;
+      color: white;
+    }
+
+    #score {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 24px;
+    }
+
+    #gameOver {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 40px;
+      display: none;
+      text-align: center;
+    }
+
+    #restart {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 20px;
+      cursor: pointer;
+      background: #2ed573;
+      border: none;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+
+<div id="score">Score: 0</div>
+
+<div id="gameOver">
+  <div>GAME OVER</div>
+  <button id="restart">Restart</button>
+</div>
+
+<canvas id="game"></canvas>
+
+<script>
+  const canvas = document.getElementById("game");
+  const ctx = canvas.getContext("2d");
+
+  canvas.width =
