@@ -1,0 +1,38 @@
+import time
+import random
+
+def slow(text):
+    for c in text:
+        print(c, end="", flush=True)
+        time.sleep(0.02)
+    print()
+
+def choice(options):
+    while True:
+        pick = input("> ").strip().lower()
+        if pick in options:
+            return pick
+        slow("Not an option. Try again.")
+
+def intro():
+    slow("You wake up at the mouth of a dark cave.")
+    slow("A cold wind blows from inside.")
+    slow("You can ENTER the cave or WALK away.")
+    slow("What do you do? (enter / walk)")
+    return choice(["enter", "walk"])
+
+def enter_cave():
+    slow("\nYou step into the cave. It's silent... too silent.")
+    slow("A torch flickers on the wall. Do you TAKE it or LEAVE it?")
+    pick = choice(["take", "leave"])
+
+    has_torch = pick == "take"
+    if has_torch:
+        slow("You grab the torch. Light floods the tunnel.")
+    else:
+        slow("You leave the torch. The darkness feels alive.")
+
+    return has_torch
+
+def tunnel(has_torch):
+    slow("\nYou walk deeper until the
