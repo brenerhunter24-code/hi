@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Laser Grid Runner</title>
+<style>
+  body {
+    margin: 0;
+    background: #000;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    color: white;
+  }
+  #score {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 22px;
+  }
+</style>
+</head>
+<body>
+
+<div id="score">Time: 0.0s</div>
+<canvas id="game"></canvas>
+
+<script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let time = 0;
+let playing = true;
+
+const gridSize = 60;
+
+const player = {
+  x: Math.floor(canvas.width / 2 / gridSize) * gridSize,
+  y: Math.floor(canvas.height / 2 / gridSize) * gridSize,
+  size: gridSize * 0.6,
+  speed: gridSize
+};
+
+const keys = {};
+document.addEventListener("keydown", e => keys[e.key] = true);
+document.addEventListener("keyup", e => keys[e.key] = false);
+
+let lasers = [];
+let lastLaser = 0;
+
+function spawnLaser() {
+  const type = Math.random() < 0.5 ? "horizontal" : "vertical";
+  const thickness = 20;
+  const speed = 6 + Math.random() * 6;
+
+  if (type === "horizontal") {
+    const y = Math.random() * canvas.height;
+    lasers.push({
+      type,
+      x: 0,
+      y,
+      w: canvas.width,
+      h: thickness,
+      speed
+    });
+  } else {
+    const x = Math.random() * canvas.width;
+    lasers.push({
+      type,
+      x,
